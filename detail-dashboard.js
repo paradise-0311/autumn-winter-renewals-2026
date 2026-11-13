@@ -277,9 +277,9 @@ async function refreshData() {
     }
     render();
     const latestTime = Date.parse(latest.time.replace(" ", "T") + "+08:00");
-    const stale = Date.now() - latestTime > 22 * 60 * 1000;
+    const stale = Date.now() - latestTime > 62 * 60 * 1000;
     showStatus(stale ? "stale" : "ready",
-      "最近同步 " + latest.time.slice(5, 16) + (stale ? " · 超过两轮未同步" : " · 每 10 分钟采集"));
+      "最近同步 " + latest.time.slice(5, 16) + (stale ? " · 超过两轮未同步" : " · 每 30 分钟采集"));
   } catch {
     const latest = snapshots[snapshots.length - 1];
     showStatus("error", latest
