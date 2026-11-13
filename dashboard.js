@@ -7,6 +7,9 @@ const chart = byId("chart");
 const buttons = [...document.querySelectorAll("[data-metric]")];
 const format = new Intl.NumberFormat("zh-CN");
 const nameOrder = new Intl.Collator("zh-CN");
+const renewalTargetRate = 0.75;
+const gradeTargets = new Map([["伴学服务 7", 313], ["伴学服务 8", 180]]);
+const groupTarget = 493;
 let snapshots = [];
 let selected = 0;
 let metric = "count";
@@ -128,7 +131,7 @@ function renderTeachers(snapshot) {
   if (!teachers.length) {
     const row = document.createElement("tr");
     const cell = element("td", "该快照暂无教师数据");
-    cell.colSpan = 4;
+    cell.colSpan = 5;
     row.append(cell);
     body.replaceChildren(row);
     return;
@@ -139,7 +142,8 @@ function renderTeachers(snapshot) {
     heading.scope = "row";
     const renewedCell = element("td", format.format(renewed));
     if (renewed) renewedCell.className = "renewed";
-    row.append(heading, element("td", format.format(enrolled)), renewedCell, element("td", rate(renewed, enrolled)));
+    row.append(heading, element("td", format.format(enrolled)), renewedCell,
+      element("td", rate(renewed, enrolled)), element("td", rate(renewed, enrolled * renewalTargetRate)));
     return row;
   }));
 }
@@ -176,6 +180,7 @@ function render() {
   byId("enrolled").textContent = format.format(enrolled);
   byId("renewed").textContent = format.format(renewed);
   byId("rate").textContent = rate(renewed, enrolled);
+  byId("attainment").textContent = rate(renewed, groupTarget);
   byId("teacher-count").textContent = snapshot.teacherCount;
   const selectedGrade = teacherGrade.value;
   const gradeNames = Object.keys(snapshot.grades);
@@ -188,7 +193,8 @@ function render() {
     const heading = element("th", grade);
     heading.scope = "row";
     tr.append(heading, ...[format.format(row.enrolled), format.format(row.renewed),
-      rate(row.renewed, row.enrolled), format.format(row.sameTeacher)].map(value => element("td", value)));
+      rate(row.renewed, row.enrolled), rate(row.renewed, gradeTargets.get(grade)),
+      format.format(row.sameTeacher)].map(value => element("td", value)));
     return tr;
   }));
 

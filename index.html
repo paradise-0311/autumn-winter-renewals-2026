@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="2026 秋续寒语文组续班趋势、教师汇总与分年级数据。">
   <title>语文组续班数据 · 2026 秋续寒</title>
-  <link rel="stylesheet" href="./dashboard.css">
+  <link rel="stylesheet" href="./dashboard.css?v=3">
   <link rel="stylesheet" href="./teachers.css">
-  <script src="./dashboard.js?v=2" defer></script>
+  <script src="./dashboard.js?v=3" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -37,6 +37,7 @@
       <div><dt>秋季在班</dt><dd><strong id="enrolled">—</strong><span>人次</span></dd></div>
       <div><dt>净续班</dt><dd><strong id="renewed">—</strong><span>人次</span></dd></div>
       <div><dt>净续班率</dt><dd><strong id="rate">—</strong></dd></div>
+      <div><dt>续班达成率</dt><dd><strong id="attainment">—</strong></dd></div>
       <div><dt>语文组老师</dt><dd><strong id="teacher-count">—</strong><span>位</span></dd></div>
     </dl>
 
@@ -74,8 +75,8 @@
       </div>
       <div class="table-scroll">
         <table>
-          <thead><tr><th scope="col">老师</th><th scope="col">在班人次</th><th scope="col">净续班人次</th><th scope="col">净续班率</th></tr></thead>
-          <tbody id="teacher-rows"><tr><td colspan="4">正在读取快照…</td></tr></tbody>
+          <thead><tr><th scope="col">老师</th><th scope="col">在班人次</th><th scope="col">净续班人次</th><th scope="col">净续班率</th><th scope="col">续班达成率</th></tr></thead>
+          <tbody id="teacher-rows"><tr><td colspan="5">正在读取快照…</td></tr></tbody>
         </table>
       </div>
     </section>
@@ -84,8 +85,8 @@
       <div class="panel-heading"><h2 id="grades-heading">分年级汇总</h2></div>
       <div class="table-scroll">
         <table>
-          <thead><tr><th scope="col">年级</th><th scope="col">在班人次</th><th scope="col">净续班人次</th><th scope="col">净续班率</th><th scope="col">同科同教师续班</th></tr></thead>
-          <tbody id="grade-rows"><tr><td colspan="5">正在读取快照…</td></tr></tbody>
+          <thead><tr><th scope="col">年级</th><th scope="col">在班人次</th><th scope="col">净续班人次</th><th scope="col">净续班率</th><th scope="col">续班达成率</th><th scope="col">同科同教师续班</th></tr></thead>
+          <tbody id="grade-rows"><tr><td colspan="6">正在读取快照…</td></tr></tbody>
         </table>
       </div>
     </section>
