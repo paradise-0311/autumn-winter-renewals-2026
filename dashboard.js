@@ -47,7 +47,7 @@ function drawChart() {
     const time = Date.parse(snapshot.time.replace(" ", "T") + "+08:00");
     return { time, value: isRate ? (enrolled ? 100 * renewed / enrolled : 0) : renewed };
   });
-  const span = points.at(-1).time - points[0].time;
+  const span = points[points.length - 1].time - points[0].time;
   const left = 48, right = width - 12, top = 12, bottom = height - 29;
   const unit = isRate ? 0.5 : 1;
   const step = Math.max(unit, Math.ceil(Math.max(...points.map(point => point.value)) / (unit * 4)) * unit);
@@ -75,7 +75,7 @@ function drawChart() {
   const last = points.length - 1;
   const ticks = [0];
   for (let i = 1; i < last; i++) {
-    if (x(points[i]) - x(points[ticks.at(-1)]) >= 70 && x(points[last]) - x(points[i]) >= 70) ticks.push(i);
+    if (x(points[i]) - x(points[ticks[ticks.length - 1]]) >= 70 && x(points[last]) - x(points[i]) >= 70) ticks.push(i);
   }
   if (last) ticks.push(last);
   ticks.forEach(i => {
@@ -209,37 +209,73 @@ function render() {
   scheduleChart();
 }
 
+async function fetchSnapshots(url) {
+  const controller = typeof AbortController === "function" ? new AbortController() : null;
+  let timer;
+  const deadline = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      if (controller) controller.abort();
+      reject(new Error("Snapshot request timed out"));
+    }, 8000);
+  });
+  try {
+    const request = fetch(url, {
+      cache: "no-store",
+      credentials: "omit",
+      ...(controller ? { signal: controller.signal } : {}),
+    }).then(response => {
+      if (!response.ok) throw new Error("Snapshot unavailable");
+      return response.json();
+    });
+    const data = await Promise.race([request, deadline]);
+    if (!Array.isArray(data) || !data.length || !data[data.length - 1]?.time) throw new Error("Snapshot missing");
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function showSnapshots(data) {
+  const latest = data[data.length - 1];
+  const current = snapshots[snapshots.length - 1];
+  if (current && latest.time < current.time) return;
+  if (latest.time !== current?.time || data.length !== snapshots.length) {
+    const previousTime = selected === snapshots.length - 1 ? null : snapshots[selected]?.time;
+    snapshots = data;
+    const lastIndex = snapshots.length - 1;
+    const previousIndex = previousTime ? snapshots.findIndex(row => row.time === previousTime) : -1;
+    selected = previousIndex >= 0 ? previousIndex : lastIndex;
+    picker.replaceChildren(...snapshots.map((snapshot, index) => new Option(
+      (index === lastIndex ? "最新 · " : "") + snapshot.time.slice(5), String(index)
+    )).reverse());
+    picker.value = String(selected);
+    picker.disabled = false;
+    buttons.forEach(button => { button.disabled = false; });
+    render();
+  }
+  const status = byId("data-status");
+  const message = "快照截至 " + latest.time.slice(5, 16) + "（UTC+8）";
+  delete status.dataset.state;
+  if (status.textContent !== message) status.textContent = message;
+}
+
 async function load() {
   if (loading) return;
   loading = true;
+  const source = document.documentElement.dataset.snapshotSource;
+  const urls = source ? ["./snapshots.json", source] : ["./snapshots.json"];
   try {
-    const snapshotSource = document.documentElement.dataset.snapshotSource || "./snapshots.json";
-    const response = await fetch(snapshotSource, { cache: "no-store", signal: AbortSignal.timeout(8000) });
-    if (!response.ok) throw new Error("Snapshot unavailable");
-    const data = await response.json();
-    if (!Array.isArray(data) || !data.length) throw new Error("Snapshot missing");
-    const latest = data.at(-1);
-    if (latest.time !== snapshots.at(-1)?.time || data.length !== snapshots.length) {
-      const previousTime = selected === snapshots.length - 1 ? null : snapshots[selected]?.time;
-      snapshots = data;
-      const lastIndex = snapshots.length - 1;
-      const previousIndex = previousTime ? snapshots.findIndex(row => row.time === previousTime) : -1;
-      selected = previousIndex >= 0 ? previousIndex : lastIndex;
-      picker.replaceChildren(...snapshots.map((snapshot, index) => new Option(
-        (index === lastIndex ? "最新 · " : "") + snapshot.time.slice(5), String(index)
-      )).reverse());
-      picker.value = String(selected);
-      picker.disabled = false;
-      buttons.forEach(button => { button.disabled = false; });
-      render();
-    }
+    const results = await Promise.all(urls.map(async url => {
+      try {
+        showSnapshots(await fetchSnapshots(url));
+        return true;
+      } catch {
+        return false;
+      }
+    }));
+    if (results.some(Boolean)) return;
     const status = byId("data-status");
-    const message = "快照截至 " + latest.time.slice(5, 16) + "（UTC+8）";
-    delete status.dataset.state;
-    if (status.textContent !== message) status.textContent = message;
-  } catch {
-    const status = byId("data-status");
-    const latest = snapshots.at(-1);
+    const latest = snapshots[snapshots.length - 1];
     status.dataset.state = "error";
     if (latest) {
       status.textContent = "暂时无法读取新快照 · 上次同步 " + latest.time.slice(5, 16) + "（UTC+8）";
@@ -266,7 +302,11 @@ for (const button of buttons) {
     scheduleChart();
   });
 }
-new ResizeObserver(scheduleChart).observe(chart);
+if (typeof ResizeObserver === "function") {
+  new ResizeObserver(scheduleChart).observe(chart);
+} else {
+  window.addEventListener("resize", scheduleChart);
+}
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) load();
 });
