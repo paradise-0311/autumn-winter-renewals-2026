@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN" data-detail-source="./renewal-detail.json">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="2026 秋续寒语文组续班数据、教师汇总与学员变动。">
+  <title>语文组续班数据 · 2026 秋续寒</title>
+  <link rel="stylesheet" href="detail-dashboard.css?v=1">
+  <script src="renewal-details.js?v=1" defer></script>
+  <script src="detail-dashboard.js?v=1" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="./">2026 秋续寒 · 返回汇总</a>
+      <nav aria-label="页面导航">
+        <a href="#trend">续班趋势</a>
+        <a href="#class-types">班型</a>
+        <a href="#student-renewals">续班学员</a>
+        <a href="#student-changes">学员变动</a>
+        <a href="#teachers">教师汇总</a>
+      </nav>
+      <button class="refresh" id="refresh" type="button">刷新数据</button>
+    </div>
+  </header>
+
+  <main class="shell" id="overview">
+    <div class="page-heading">
+      <div>
+        <h1>语文组续班数据</h1>
+        <p id="data-status" class="data-status" role="status">正在读取看板快照…</p>
+      </div>
+      <label class="snapshot-control">
+        <span>数据快照</span>
+        <select id="snapshot" disabled>
+          <option value="">最新快照</option>
+        </select>
+      </label>
+    </div>
+
+    <dl class="metrics" aria-label="语文组续班概况">
+      <div><dt>秋季在班</dt><dd><strong id="enrolled">—</strong><span>人次</span></dd></div>
+      <div><dt>净续班</dt><dd><strong id="renewed">—</strong><span>人次</span></dd></div>
+      <div><dt>净续班率</dt><dd><strong id="rate">—</strong></dd></div>
+      <div><dt>语文组老师</dt><dd><strong id="staff-count">—</strong><span>位</span></dd></div>
+    </dl>
+
+    <div class="data-grid">
+      <section class="panel trend" id="trend" aria-labelledby="trend-heading">
+        <div class="panel-heading">
+          <h2 id="trend-heading">续班趋势</h2>
+          <div class="segmented" role="group" aria-label="走势指标">
+            <button type="button" data-metric="count" aria-pressed="true">人次</button>
+            <button type="button" data-metric="rate" aria-pressed="false">续班率</button>
+          </div>
+        </div>
+        <div class="chart-key"><span></span>语文组 <span class="chart-unit" id="chart-unit">净续班人次</span></div>
+        <canvas id="chart" role="img" aria-label="语文组续班趋势">选取上方的数据快照可查看各时点的净续班数据。</canvas>
+      </section>
+
+      <section class="panel changes" id="changes" aria-labelledby="changes-heading">
+        <div class="panel-heading">
+          <h2 id="changes-heading">本轮学员变动</h2>
+          <span id="change-count" class="change-count"></span>
+        </div>
+        <p id="change-summary" class="muted" aria-live="polite">正在读取快照…</p>
+        <ul class="changes-list" id="change-list" hidden></ul>
+      </section>
+    </div>
+
+    <section class="panel teachers" id="teachers" aria-labelledby="teachers-heading">
+      <div class="panel-heading">
+        <h2 id="teachers-heading">教师汇总</h2>
+        <label class="grade-control">
+          <span>年级</span>
+          <select id="grade" disabled><option value="">全部年级</option></select>
+        </label>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th scope="col">秋季老师</th><th scope="col">在班人次</th><th scope="col">净续班人次</th><th scope="col">净续班率</th><th scope="col">同科同教师续班</th></tr>
+          </thead>
+          <tbody id="staff-rows"><tr><td colspan="5">正在读取快照…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="detail-section">
+      <div class="detail-filters shared-filters" role="group" aria-label="班型、续班名单及变动的筛选条件">
+        <label>老师 <select id="detail-teacher"><option value="">全部老师</option></select></label>
+        <label>年级 <select id="detail-grade"><option value="">全部年级</option></select></label>
+        <label>秋季班型 <select id="detail-type"><option value="">全部班型</option></select></label>
+      </div>
+    <section class="panel teacher-details" id="class-types" aria-labelledby="class-types-title">
+      <div class="panel-heading"><h2 id="class-types-title">各老师 × 各班型</h2></div>
+      <p class="muted" id="class-status" aria-live="polite">正在核对班型数据…</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">老师 / 秋季班型</th><th scope="col">年级</th><th scope="col">秋季在班</th><th scope="col">净续班</th><th scope="col">净续班率</th><th scope="col">较上轮</th></tr></thead>
+          <tbody id="class-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel teacher-details" id="student-renewals" aria-labelledby="student-renewals-title">
+      <div class="panel-heading"><h2 id="student-renewals-title">我的已续班学员</h2></div>
+      <div class="detail-filters">
+        <label>查看方式 <select id="student-role"><option value="1">我秋季带的学员</option><option value="3">续到我班的学员</option></select></label>
+        <label>学员姓名 <input type="search" id="student-search" placeholder="输入姓名"></label>
+      </div>
+      <p class="muted" id="student-count" aria-live="polite"></p>
+      <button class="plain-button" id="clear-class" type="button" hidden></button>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">学员</th><th scope="col">年级</th><th scope="col">秋季班型 / 班级</th><th scope="col">秋季老师</th><th scope="col">续班老师</th></tr></thead>
+          <tbody id="student-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel teacher-details" id="student-changes" aria-labelledby="student-changes-title">
+      <div class="panel-heading"><h2 id="student-changes-title">我的本轮变动</h2></div>
+      <div class="detail-filters">
+        <label>时间 <select id="student-period"><option value="round">本轮</option><option value="today">今天</option><option value="week">近 7 天</option></select></label>
+      </div>
+      <p class="muted" id="student-change-summary" aria-live="polite"></p>
+      <ul class="changes-list" id="student-change-list"></ul>
+    </section>
+    </div>
+    <footer>数据来源 <span>2026 秋续寒看板 · 文学</span><span>时间 UTC+8</span></footer>
+  </main>
+</body>
+</html>
