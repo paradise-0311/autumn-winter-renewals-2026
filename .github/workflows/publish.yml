@@ -32,6 +32,9 @@ jobs:
         run: |
           mkdir _site
           cp index.html dashboard.js dashboard.css teachers.css .nojekyll _site/
+          if [ -f details.html ]; then
+            cp details.html detail-dashboard.js detail-dashboard.css renewal-details.js renewal-detail.json _site/
+          fi
           if [ "$GITHUB_EVENT_NAME" = push ]; then cp snapshots.json _site/; fi
           python3 build_snapshots.py _site/snapshots.json
           if [ "$GITHUB_EVENT_NAME" = schedule ] &&
