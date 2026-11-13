@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN" data-snapshot-source="https://autumn-winter-renewals-2026.leafy-owlet-6920.chatgpt.site/snapshots.json">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="2026 秋续寒语文组续班趋势、教师汇总与分年级数据。">
+  <title>语文组续班数据 · 2026 秋续寒</title>
+  <link rel="stylesheet" href="./dashboard.css">
+  <link rel="stylesheet" href="./teachers.css">
+  <script src="./dashboard.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="#overview">2026 秋续寒</a>
+      <nav aria-label="页面导航">
+        <a href="#trend">续班趋势</a>
+        <a href="#changes">本轮变动</a>
+        <a href="#teachers">教师汇总</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell" id="overview">
+    <div class="page-heading">
+      <div>
+        <h1>语文组续班数据</h1>
+        <p id="data-status" class="data-status" role="status">正在读取快照…</p>
+      </div>
+      <label class="snapshot-control" for="snapshot">
+        <span>数据快照</span>
+        <select id="snapshot" disabled><option>最新快照</option></select>
+      </label>
+    </div>
+
+    <dl class="metrics" aria-label="语文组续班概况">
+      <div><dt>秋季在班</dt><dd><strong id="enrolled">—</strong><span>人次</span></dd></div>
+      <div><dt>净续班</dt><dd><strong id="renewed">—</strong><span>人次</span></dd></div>
+      <div><dt>净续班率</dt><dd><strong id="rate">—</strong></dd></div>
+      <div><dt>语文组老师</dt><dd><strong id="teacher-count">—</strong><span>位</span></dd></div>
+    </dl>
+
+    <div class="data-grid">
+      <section class="panel trend" id="trend" aria-labelledby="trend-heading">
+        <div class="panel-heading">
+          <h2 id="trend-heading">续班趋势</h2>
+          <div class="segmented" role="group" aria-label="走势指标">
+            <button type="button" data-metric="count" aria-pressed="true" disabled>人次</button>
+            <button type="button" data-metric="rate" aria-pressed="false" disabled>续班率</button>
+          </div>
+        </div>
+        <div class="chart-key"><span></span>语文组 <span class="chart-unit" id="chart-unit">净续班人次</span></div>
+        <canvas id="chart" role="img" aria-label="语文组续班趋势">可通过数据快照查看各时点的净续班数据。</canvas>
+      </section>
+
+      <section class="panel changes" id="changes" aria-labelledby="changes-heading">
+        <div class="panel-heading"><h2 id="changes-heading">本轮变动</h2></div>
+        <p id="change-summary" class="muted" aria-live="polite">正在读取快照…</p>
+        <ul class="changes-list" id="change-list" hidden></ul>
+        <div class="teacher-changes" id="teacher-changes" hidden>
+          <h3>教师净续班增减</h3>
+          <ul class="changes-list" id="teacher-change-list"></ul>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel teachers" id="teachers" aria-labelledby="teachers-heading">
+      <div class="panel-heading">
+        <h2 id="teachers-heading">教师汇总</h2>
+        <label class="grade-control" for="teacher-grade">
+          <span>年级</span>
+          <select id="teacher-grade" disabled><option value="">全部年级</option></select>
+        </label>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">老师</th><th scope="col">在班人次</th><th scope="col">净续班人次</th><th scope="col">净续班率</th></tr></thead>
+          <tbody id="teacher-rows"><tr><td colspan="4">正在读取快照…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="grades" aria-labelledby="grades-heading">
+      <div class="panel-heading"><h2 id="grades-heading">分年级汇总</h2></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">年级</th><th scope="col">在班人次</th><th scope="col">净续班人次</th><th scope="col">净续班率</th><th scope="col">同科同教师续班</th></tr></thead>
+          <tbody id="grade-rows"><tr><td colspan="5">正在读取快照…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    <footer>数据来源 <span>2026 秋续寒看板 · 文学</span><span>时间 UTC+8</span></footer>
+  </main>
+</body>
+</html>
