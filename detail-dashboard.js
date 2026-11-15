@@ -8,6 +8,7 @@ const chart = byId("chart");
 const metricButtons = [...document.querySelectorAll("[data-metric]")];
 const numberFormat = new Intl.NumberFormat("zh-CN");
 const nameOrder = new Intl.Collator("zh-CN", { numeric: true });
+const renewalTargetRate = 0.75;
 const refreshInterval = 30_000;
 
 let snapshots = [];
@@ -63,7 +64,9 @@ function drawTeachers(snapshot) {
     th.scope = "row";
     tr.append(th, textElement("td", numberFormat.format(enrolled)),
       textElement("td", numberFormat.format(renewed), renewed ? "renewed" : ""),
-      textElement("td", rate(renewed, enrolled)), textElement("td", numberFormat.format(same)));
+      textElement("td", rate(renewed, enrolled)),
+      textElement("td", rate(renewed, enrolled * renewalTargetRate)),
+      textElement("td", numberFormat.format(same)));
     return tr;
   }));
 }
